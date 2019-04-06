@@ -2,6 +2,12 @@ package com.leeo.register.server;
 
 public class ServiceInstance {
 
+    private static final long ALIVE_TIME_BEHIND = 3000;
+
+    public ServiceInstance(){
+        this.lease = new Lease();
+    }
+
     /**
      * 服务实例id
      */
@@ -22,10 +28,19 @@ public class ServiceInstance {
      */
     private String serviceInstanceHostname;
 
-    /**
-     * 最近更新时间
-     */
-    private String lasttime;
+    private Lease lease;
+
+    private class Lease{
+
+        private long lastUpdateTime = System.currentTimeMillis();
+
+        public void renew(){
+            lastUpdateTime = System.currentTimeMillis();
+        }
+
+    }
+
+
 
     public String getServiceInstanceId() {
         return serviceInstanceId;
@@ -59,11 +74,28 @@ public class ServiceInstance {
         this.serviceInstanceHostname = serviceInstanceHostname;
     }
 
-    public String getLasttime() {
-        return lasttime;
+
+    public Lease getLease() {
+        return lease;
     }
 
-    public void setLasttime(String lasttime) {
-        this.lasttime = lasttime;
+    public void setLease(Lease lease) {
+        this.lease = lease;
     }
+
+    public void renew(){
+        this.lease.renew();
+    }
+    public long getLastUpdateTime(){
+        return this.lease.lastUpdateTime;
+    }
+
+    /**
+     * 判断服务是否存活
+     * @return
+     */
+    public boolean isAlive(){
+        return System.currentTimeMillis() - this.getLastUpdateTime() < ALIVE_TIME_BEHIND;
+    }
+
 }
