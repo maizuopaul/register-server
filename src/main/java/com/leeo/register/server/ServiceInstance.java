@@ -28,6 +28,10 @@ public class ServiceInstance {
      */
     private String serviceInstanceHostname;
 
+
+    /**
+     * 契约 维护服务和注册表的关系
+     */
     private Lease lease;
 
     private class Lease{
